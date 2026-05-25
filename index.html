@@ -5818,6 +5818,16 @@
       <!-- Niveau 1 : passions (grandes tuiles) -->
       <div id="irlPassionRow"></div>
 
+      <!-- Filtre par date -->
+      <div style="display:flex;gap:6px;overflow-x:auto;padding:6px 0;margin-bottom:8px;scrollbar-width:none;" id="irlDateRow">
+        <button class="pill active" data-irldate="all" onclick="setIrlDateFilter('all',this)">📅 Tous</button>
+        <button class="pill" data-irldate="today" onclick="setIrlDateFilter('today',this)">Aujourd'hui</button>
+        <button class="pill" data-irldate="tomorrow" onclick="setIrlDateFilter('tomorrow',this)">Demain</button>
+        <button class="pill" data-irldate="week" onclick="setIrlDateFilter('week',this)">Cette semaine</button>
+        <button class="pill" data-irldate="month" onclick="setIrlDateFilter('month',this)">Ce mois</button>
+        <button class="pill" data-irldate="custom" onclick="openIrlCalendar()">🗓 Choisir</button>
+      </div>
+
       <!-- Niveau 2 : filtres existants Tous / Mes events / Inscrit -->
       <div class="pill-row" id="irlFilterRow">
         <button class="pill active" data-irlfilter="all">Tous</button>
@@ -6886,99 +6896,109 @@ function buildSeed() {
       createdAt: days(3), likes: 223, liked: false, comments: [] },
   ];
 
+  // Helpers pour créer des dates précises
+  function todayAt(h, m) { var d = new Date(); d.setHours(h, m, 0, 0); return d.getTime(); }
+  function tomorrowAt(h, m) { var d = new Date(); d.setDate(d.getDate()+1); d.setHours(h, m, 0, 0); return d.getTime(); }
+  function inDaysAt(days, h, m) { var d = new Date(); d.setDate(d.getDate()+days); d.setHours(h, m, 0, 0); return d.getTime(); }
+
   const seedEvents = [
-    // ===== Événements à venir (dates futures) =====
-    { id: "e1", title: "Jam session guitaristes débutants", passion: "musique", emoji: "🎸",
-      organizerId: "u_lea", date: days(2), city: "Lyon",
-      attendees: ["u_karim", "u_amira"], desc: "On joue, on partage des licks, ambiance bienveillante." },
-    { id: "e2", title: "Balade photo au lever du soleil", passion: "photo", emoji: "📷",
-      organizerId: "u_karim", date: days(4), city: "Paris",
-      attendees: ["u_nina", "u_sofia"], desc: "2h de marche, 6h du mat, lumière magique sur le Pont des Arts." },
-    { id: "e3", title: "Dîner entre passionnés de cuisine", passion: "cuisine", emoji: "🍳",
-      organizerId: "u_theo", date: days(5), city: "Marseille",
-      attendees: ["u_emma", "u_zoe", "u_liam"], desc: "Chacun amène un plat, on débriefe les techniques." },
-    { id: "e4", title: "Meet-up voyageurs solo", passion: "voyage", emoji: "🌍",
-      organizerId: "u_nina", date: days(7), city: "Lisbonne",
-      attendees: ["u_yanis"], desc: "Miradouro Santa Catarina. On échange des plans, des anecdotes. BYOB." },
-    { id: "e5", title: "Atelier IA pour non-techs", passion: "tech", emoji: "💻",
-      organizerId: "u_yanis", date: days(3), city: "Toulouse",
-      attendees: ["u_theo", "u_sofia"], desc: "La Cantine. Pas de code, juste comment intégrer l'IA dans ton quotidien." },
-    { id: "e6", title: "Cours de yoga sur la plage", passion: "yoga", emoji: "🧘",
-      organizerId: "u_emma", date: days(6), city: "Biarritz",
-      attendees: ["u_nina", "u_amira", "u_zoe"], desc: "Plage de la Côte des Basques, 7h du mat. Tapis fournis." },
-    { id: "e7", title: "Atelier céramique découverte", passion: "art", emoji: "🏺",
-      organizerId: "u_lou", date: days(8), city: "Uzès",
-      attendees: ["u_inès", "u_chloé"], desc: "3h pour comprendre le tour. 3 places. Terre et thé fournis." },
-    { id: "e8", title: "Open Mic poésie", passion: "litterature", emoji: "📝",
-      organizerId: "u_anaïs", date: days(10), city: "Québec",
-      attendees: ["u_sofia"], desc: "Café Artéfact. Scène libre 3 min par personne. Pas de jugement, on écoute." },
+    // AUJOURD'HUI
     { id: "e9", title: "Session escalade nocturne", passion: "sport", emoji: "🧗",
-      organizerId: "u_jona", date: days(1), city: "Chamonix",
-      attendees: ["u_mehdi", "u_raph"], desc: "Salle Edelweiss, 20h. Tous niveaux, binômes formés sur place." },
-    { id: "e10", title: "Ciné-club films restaurés", passion: "cinema", emoji: "🎬",
-      organizerId: "u_noa", date: days(12), city: "Paris",
-      attendees: ["u_sofia", "u_inès", "u_raph"], desc: "Rosy's cinéma. Projection + débat, Agnès Varda ce mois-ci." },
-    // ===== Plus d'événements partout en France =====
+      organizerId: "u_jona", date: todayAt(20, 0), city: "Chamonix",
+      attendees: ["u_mehdi", "u_raph"], desc: "Salle Edelweiss, 20h. Tous niveaux." },
+    { id: "e1", title: "Jam session guitaristes débutants", passion: "musique", emoji: "🎸",
+      organizerId: "u_lea", date: todayAt(18, 30), city: "Lyon",
+      attendees: ["u_karim", "u_amira"], desc: "On joue, on partage des licks, ambiance bienveillante." },
+
+    // DEMAIN
+    { id: "e2", title: "Balade photo au lever du soleil", passion: "photo", emoji: "📷",
+      organizerId: "u_karim", date: tomorrowAt(6, 0), city: "Paris",
+      attendees: ["u_nina", "u_sofia"], desc: "2h de marche, lumière magique sur le Pont des Arts." },
     { id: "e11", title: "Skate jam au skatepark", passion: "sport", emoji: "🛹",
-      organizerId: "u_yanis", date: days(2), city: "Bordeaux",
-      attendees: ["u_raph", "u_jona"], desc: "Skatepark des Chartrons, 14h. Tous niveaux. Bols + street." },
-    { id: "e12", title: "Concert acoustique amateur", passion: "musique", emoji: "🎵",
-      organizerId: "u_lea", date: days(11), city: "Nantes",
-      attendees: ["u_karim", "u_clara"], desc: "Un café-concert, 4 artistes amateurs, ambiance bienveillante." },
-    { id: "e13", title: "Atelier pâtisserie viennoiseries", passion: "cuisine", emoji: "🥐",
-      organizerId: "u_theo", date: days(9), city: "Strasbourg",
-      attendees: ["u_emma"], desc: "On fait des croissants depuis le détrempage. 5h, 4 personnes max." },
-    { id: "e14", title: "Book club mensuel", passion: "litterature", emoji: "📚",
-      organizerId: "u_sofia", date: days(14), city: "Bordeaux",
-      attendees: ["u_anaïs", "u_chloé"], desc: "Ce mois-ci on discute Annie Ernaux, Les Années. Apporte un thé." },
-    { id: "e15", title: "Marche photo nocturne", passion: "photo", emoji: "🌃",
-      organizerId: "u_karim", date: days(5), city: "Lille",
-      attendees: ["u_lea"], desc: "Vieille ville à la lumière des lampadaires. Trépied recommandé." },
+      organizerId: "u_yanis", date: tomorrowAt(14, 0), city: "Bordeaux",
+      attendees: ["u_raph", "u_jona"], desc: "Skatepark des Chartrons. Tous niveaux." },
+
+    // CETTE SEMAINE
+    { id: "e3", title: "Dîner entre passionnés de cuisine", passion: "cuisine", emoji: "🍳",
+      organizerId: "u_theo", date: inDaysAt(2, 19, 30), city: "Marseille",
+      attendees: ["u_emma", "u_zoe", "u_liam"], desc: "Chacun amène un plat, on débriefe les techniques." },
+    { id: "e5", title: "Atelier IA pour non-techs", passion: "tech", emoji: "💻",
+      organizerId: "u_yanis", date: inDaysAt(2, 14, 0), city: "Toulouse",
+      attendees: ["u_theo", "u_sofia"], desc: "Pas de code, juste comment intégrer l'IA dans ton quotidien." },
     { id: "e16", title: "Sortie running en forêt", passion: "sport", emoji: "🏃",
-      organizerId: "u_jona", date: days(3), city: "Annecy",
-      attendees: ["u_emma", "u_raph"], desc: "Bois du semnoz, 8h, 10 km en mode chill. Eau et fruit fournis." },
-    { id: "e17", title: "Soirée dégustation vins nature", passion: "cuisine", emoji: "🍷",
-      organizerId: "u_theo", date: days(7), city: "Dijon",
-      attendees: ["u_emma", "u_clara"], desc: "5 cuvées d'artisans bourguignons. Cave Au Verre Vert. Inscription." },
-    { id: "e18", title: "Workshop écriture créative", passion: "litterature", emoji: "✍️",
-      organizerId: "u_anaïs", date: days(13), city: "Rennes",
-      attendees: ["u_sofia", "u_inès"], desc: "3h pour casser le syndrome de la page blanche. Carnet apporté." },
+      organizerId: "u_jona", date: inDaysAt(3, 8, 0), city: "Annecy",
+      attendees: ["u_emma", "u_raph"], desc: "Bois du Semnoz, 10 km en mode chill." },
+    { id: "e15", title: "Marche photo nocturne", passion: "photo", emoji: "🌃",
+      organizerId: "u_karim", date: inDaysAt(3, 21, 0), city: "Lille",
+      attendees: ["u_lea"], desc: "Vieille ville à la lumière des lampadaires." },
+    { id: "e4", title: "Meet-up voyageurs solo", passion: "voyage", emoji: "🌍",
+      organizerId: "u_nina", date: inDaysAt(4, 17, 0), city: "Lisbonne",
+      attendees: ["u_yanis"], desc: "Miradouro Santa Catarina. On échange des plans." },
     { id: "e19", title: "Cours yoga Hatha", passion: "yoga", emoji: "🧘",
-      organizerId: "u_emma", date: days(4), city: "Montpellier",
-      attendees: ["u_amira"], desc: "Studio Equilibre. 90 min, intermédiaire. Inscription gratuite." },
+      organizerId: "u_emma", date: inDaysAt(4, 10, 0), city: "Montpellier",
+      attendees: ["u_amira"], desc: "Studio Equilibre. 90 min, intermédiaire." },
+    { id: "e6", title: "Cours de yoga sur la plage", passion: "yoga", emoji: "🧘",
+      organizerId: "u_emma", date: inDaysAt(5, 7, 0), city: "Biarritz",
+      attendees: ["u_nina", "u_amira", "u_zoe"], desc: "Plage de la Côte des Basques. Tapis fournis." },
+    { id: "e17", title: "Soirée dégustation vins nature", passion: "cuisine", emoji: "🍷",
+      organizerId: "u_theo", date: inDaysAt(5, 19, 0), city: "Dijon",
+      attendees: ["u_emma", "u_clara"], desc: "5 cuvées d'artisans bourguignons." },
+
+    // CE MOIS
+    { id: "e12", title: "Concert acoustique amateur", passion: "musique", emoji: "🎵",
+      organizerId: "u_lea", date: inDaysAt(7, 20, 30), city: "Nantes",
+      attendees: ["u_karim", "u_clara"], desc: "Café-concert, 4 artistes amateurs." },
+    { id: "e7", title: "Atelier céramique découverte", passion: "art", emoji: "🏺",
+      organizerId: "u_lou", date: inDaysAt(8, 14, 0), city: "Uzès",
+      attendees: ["u_inès", "u_chloé"], desc: "3h pour comprendre le tour. Terre et thé fournis." },
     { id: "e20", title: "Vernissage galerie indé", passion: "art", emoji: "🎨",
-      organizerId: "u_lou", date: days(8), city: "Toulouse",
+      organizerId: "u_lou", date: inDaysAt(8, 18, 0), city: "Toulouse",
       attendees: ["u_inès", "u_chloé"], desc: "Galerie La Petite. 18 artistes émergents. Verre offert. Tous bienvenus." },
     { id: "e21", title: "Sortie photo argentique", passion: "photo", emoji: "📸",
-      organizerId: "u_karim", date: days(15), city: "Strasbourg",
-      attendees: ["u_lea", "u_sofia"], desc: "Petite France. 4h. Apporte ton boîtier, on développe ensemble après." },
+      organizerId: "u_karim", date: inDaysAt(10, 10, 0), city: "Strasbourg",
+      attendees: ["u_lea", "u_sofia"], desc: "Petite France. 4h. Apporte ton boîtier." },
     { id: "e22", title: "Soirée DJ amateur", passion: "musique", emoji: "🎧",
-      organizerId: "u_lea", date: days(6), city: "Marseille",
+      organizerId: "u_lea", date: inDaysAt(9, 21, 0), city: "Marseille",
       attendees: ["u_yanis", "u_raph"], desc: "Vieux Port, rooftop. 4 sets, vinyl + numérique." },
     { id: "e23", title: "Randonnée gourmande", passion: "voyage", emoji: "🥾",
-      organizerId: "u_nina", date: days(10), city: "Grenoble",
-      attendees: ["u_emma", "u_amira"], desc: "12 km en moyenne montagne, pause pique-nique aux Sept-Laux." },
+      organizerId: "u_nina", date: inDaysAt(11, 9, 0), city: "Grenoble",
+      attendees: ["u_emma", "u_amira"], desc: "12 km en moyenne montagne, pause pique-nique." },
     { id: "e24", title: "Atelier menuiserie débutants", passion: "art", emoji: "🪵",
-      organizerId: "u_lou", date: days(11), city: "Nantes",
-      attendees: [], desc: "On fabrique un tabouret en bois massif, du choix de l'essence au ponçage." },
+      organizerId: "u_lou", date: inDaysAt(13, 14, 0), city: "Nantes",
+      attendees: [], desc: "On fabrique un tabouret en bois massif." },
     { id: "e25", title: "Run + petit-déj collectif", passion: "sport", emoji: "🍳",
-      organizerId: "u_jona", date: days(2), city: "Nice",
-      attendees: ["u_raph", "u_emma", "u_amira"], desc: "Promenade des Anglais. 5 km, allure conviviale, café après." },
+      organizerId: "u_jona", date: tomorrowAt(7, 30), city: "Nice",
+      attendees: ["u_raph", "u_emma", "u_amira"], desc: "Promenade des Anglais. 5 km, café après." },
     { id: "e26", title: "Atelier tirage argentique", passion: "photo", emoji: "🖼️",
-      organizerId: "u_karim", date: days(17), city: "Lyon",
-      attendees: ["u_lea"], desc: "Atelier rue Vauban. 3h, négatifs personnels acceptés. Petite participation." },
+      organizerId: "u_karim", date: inDaysAt(14, 15, 0), city: "Lyon",
+      attendees: ["u_lea"], desc: "3h, négatifs personnels acceptés." },
     { id: "e27", title: "Vide-grenier de livres", passion: "litterature", emoji: "📖",
-      organizerId: "u_sofia", date: days(9), city: "Tours",
-      attendees: ["u_chloé"], desc: "Place Plumereau. Apporte tes livres, échange ou achète au prix libre." },
+      organizerId: "u_sofia", date: inDaysAt(12, 10, 0), city: "Tours",
+      attendees: ["u_chloé"], desc: "Place Plumereau. Échange ou achète au prix libre." },
     { id: "e28", title: "Initiation surf coucher de soleil", passion: "sport", emoji: "🏄",
-      organizerId: "u_jona", date: days(16), city: "Biarritz",
-      attendees: ["u_emma"], desc: "Plage de la Grande, conditions débutant. Combi + planche fournis." },
+      organizerId: "u_jona", date: inDaysAt(15, 18, 0), city: "Biarritz",
+      attendees: ["u_emma"], desc: "Conditions débutant. Combi + planche fournis." },
     { id: "e29", title: "Soirée projection cinéma muet", passion: "cinema", emoji: "🎞️",
-      organizerId: "u_noa", date: days(18), city: "Reims",
-      attendees: ["u_sofia"], desc: "Cinéma Opéra. Charlie Chaplin avec piano live." },
+      organizerId: "u_noa", date: inDaysAt(16, 20, 30), city: "Reims",
+      attendees: ["u_sofia"], desc: "Charlie Chaplin avec piano live." },
     { id: "e30", title: "Atelier cuisine japonaise", passion: "cuisine", emoji: "🍱",
-      organizerId: "u_theo", date: days(13), city: "Lyon",
-      attendees: ["u_emma", "u_zoe"], desc: "On fait nos sushis et okonomiyaki. 3h. Tablier conseillé." },
+      organizerId: "u_theo", date: inDaysAt(10, 14, 0), city: "Lyon",
+      attendees: ["u_emma", "u_zoe"], desc: "Sushis et okonomiyaki. 3h." },
+    { id: "e8", title: "Open Mic poésie", passion: "litterature", emoji: "📝",
+      organizerId: "u_anaïs", date: inDaysAt(6, 19, 0), city: "Québec",
+      attendees: ["u_sofia"], desc: "Scène libre 3 min par personne." },
+    { id: "e10", title: "Ciné-club films restaurés", passion: "cinema", emoji: "🎬",
+      organizerId: "u_noa", date: inDaysAt(9, 20, 0), city: "Paris",
+      attendees: ["u_sofia", "u_inès", "u_raph"], desc: "Agnès Varda ce mois-ci." },
+    { id: "e13", title: "Atelier pâtisserie viennoiseries", passion: "cuisine", emoji: "🥐",
+      organizerId: "u_theo", date: inDaysAt(6, 9, 0), city: "Strasbourg",
+      attendees: ["u_emma"], desc: "Croissants depuis le détrempage." },
+    { id: "e14", title: "Book club mensuel", passion: "litterature", emoji: "📚",
+      organizerId: "u_sofia", date: inDaysAt(11, 18, 0), city: "Bordeaux",
+      attendees: ["u_anaïs", "u_chloé"], desc: "Annie Ernaux, Les Années." },
+    { id: "e18", title: "Workshop écriture créative", passion: "litterature", emoji: "✍️",
+      organizerId: "u_anaïs", date: inDaysAt(7, 14, 0), city: "Rennes",
+      attendees: ["u_sofia", "u_inès"], desc: "3h contre le syndrome de la page blanche." },
   ];
 
   const seedStories = [
@@ -7122,9 +7142,12 @@ function fmtDate(ts) {
 
 function fmtEventDate(ts) {
   const d = new Date(ts);
+  var h = d.getHours();
+  var m = d.getMinutes();
   return {
     day: d.getDate(),
     month: d.toLocaleDateString("fr-FR", { month: "short" }).replace(".", ""),
+    time: (h < 10 ? "0" : "") + h + "h" + (m > 0 ? (m < 10 ? "0" : "") + m : ""),
   };
 }
 
@@ -10147,17 +10170,31 @@ function renderMessages() {
   $("#messagesEmpty").style.display = "none";
 
   list.innerHTML = filtered.map(c => {
+    const seedUsers = state.seed.users || [];
     const u = seedUsers.find(x => x.id === c.userId) || { name: "Inconnu", avatar: "#7c3aed", profileEmoji: "🙂" };
-    const lastMsg = c.messages[c.messages.length - 1];
-    const passion = passionById(c.passion) || { label: c.passion, emoji: "✨" };
+    const lastMsg = c.messages && c.messages.length ? c.messages[c.messages.length - 1] : { from: "me", text: "Aucun message" };
+    const passion = passionById(c.passion) || { label: c.passion || "autre", emoji: "✨" };
+
+    // Affichage groupe vs conversation simple
+    var displayName, displayEmoji, displayAvatar;
+    if (c.isGroup) {
+      displayName = c.groupName || "Groupe";
+      displayEmoji = "👥";
+      displayAvatar = "var(--accent)";
+    } else {
+      displayName = c.userName || u.name;
+      displayEmoji = c.userEmoji || u.profileEmoji;
+      displayAvatar = c.userColor || u.avatar;
+    }
+
     return `<div class="msg-card ${c.unread > 0 ? "unread" : ""}" onclick="openConversation('${c.id}')">
-      <div class="msg-avatar" style="background:${u.avatar};">${u.profileEmoji}</div>
+      <div class="msg-avatar" style="background:${displayAvatar};">${displayEmoji}</div>
       <div class="msg-body">
         <div class="msg-head">
-          <span class="msg-name">${escapeHtml(u.name)}</span>
+          <span class="msg-name">${escapeHtml(displayName)}</span>
           <span class="msg-time">${fmtMsgTime(c.lastAt)}</span>
         </div>
-        <div class="msg-passion">${passion.emoji} ${escapeHtml(passion.label)}</div>
+        <div class="msg-passion">${passion.emoji} ${escapeHtml(passion.label)}${c.isGroup ? ' · ' + ((c.userIds||[]).length || 0) + ' membres' : ''}</div>
         <div class="msg-preview">${lastMsg.from === "me" ? "Toi : " : ""}${escapeHtml(lastMsg.text)}</div>
       </div>
       ${c.unread > 0 ? `<div class="msg-badge">${c.unread}</div>` : ""}
@@ -10170,9 +10207,19 @@ function openConversation(convId) {
   const c = convs.find(x => x.id === convId);
   if (!c) return;
   const u = (state.seed.users || []).find(x => x.id === c.userId) || { name: "Inconnu", avatar: "#7c3aed", profileEmoji: "🙂" };
-  const passion = passionById(c.passion) || { label: c.passion, emoji: "✨" };
+  const passion = passionById(c.passion) || { label: c.passion || "autre", emoji: "✨" };
 
-  // Marquer comme lu
+  var displayName, displayEmoji, displayAvatar;
+  if (c.isGroup) {
+    displayName = c.groupName || "Groupe";
+    displayEmoji = "👥";
+    displayAvatar = "var(--accent)";
+  } else {
+    displayName = c.userName || u.name;
+    displayEmoji = c.userEmoji || u.profileEmoji;
+    displayAvatar = c.userColor || u.avatar;
+  }
+
   c.unread = 0;
   saveConversations();
 
@@ -10183,12 +10230,15 @@ function openConversation(convId) {
 
   const html = `
     <div class="conv-modal-head">
-      <div class="msg-avatar" style="background:${u.avatar};width:40px;height:40px;font-size:18px;">${u.profileEmoji}</div>
+      <div class="msg-avatar" style="background:${displayAvatar};width:40px;height:40px;font-size:18px;">${displayEmoji}</div>
       <div style="flex:1;">
-        <div style="font-weight:700;font-size:15px;color:var(--text);">${escapeHtml(u.name)}</div>
-        <div class="msg-passion">${passion.emoji} ${escapeHtml(passion.label)}</div>
+        <div style="font-weight:700;font-size:15px;color:var(--text);">${escapeHtml(displayName)}</div>
+        <div class="msg-passion">${passion.emoji} ${escapeHtml(passion.label)}${c.isGroup ? ' · ' + ((c.userIds||[]).length || 0) + ' membres' : ''}</div>
       </div>
       <div class="conv-actions">
+        ${c.isGroup ? `<button class="conv-action-btn" onclick="showGroupMembers('${convId}')" title="Membres" aria-label="Membres">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </button>` : ''}
         <button class="conv-action-btn" onclick="startCall('${convId}', 'voice')" title="Appel audio" aria-label="Appel audio">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.62 10.79 c1.44 2.83 3.76 5.14 6.59 6.59 l2.2-2.2 c0.27-0.27 0.67-0.36 1.02-0.24 1.12 0.37 2.33 0.57 3.57 0.57 0.55 0 1 0.45 1 1 V20 c0 0.55-0.45 1-1 1 -9.39 0-17-7.61-17-17 0-0.55 0.45-1 1-1 h3.5 c0.55 0 1 0.45 1 1 0 1.25 0.2 2.45 0.57 3.57 0.11 0.35 0.03 0.74-0.25 1.02 z"/></svg>
         </button>
@@ -10753,6 +10803,53 @@ function confirmCreateGroup() {
   toast(`✨ Groupe « ${name} » créé`);
 }
 
+function showGroupMembers(convId) {
+  var convs = getConversations();
+  var c = convs.find(function(x) { return x.id === convId; });
+  if (!c) return;
+  var seedUsers = state.seed.users || [];
+  var memberIds = c.userIds || [];
+
+  var membersHTML = '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">\
+    <div style="width:40px;height:40px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:18px;">😊</div>\
+    <div style="flex:1;"><div style="font-weight:700;font-size:13px;">Toi</div><div style="font-size:11px;color:var(--muted);">Admin · En ligne</div></div>\
+    <span style="font-size:10px;font-weight:700;color:var(--accent);background:var(--bg-deep);padding:3px 8px;border-radius:6px;">Admin</span>\
+  </div>';
+
+  membersHTML += memberIds.map(function(uid) {
+    var u = seedUsers.find(function(x) { return x.id === uid; });
+    if (!u) return '';
+    var passion = passionById(u.passion);
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">\
+      <div style="width:40px;height:40px;border-radius:50%;background:' + u.avatar + ';display:flex;align-items:center;justify-content:center;font-size:18px;">' + u.profileEmoji + '</div>\
+      <div style="flex:1;">\
+        <div style="font-weight:700;font-size:13px;">' + escapeHtml(u.name) + '</div>\
+        <div style="font-size:11px;color:var(--muted);">' + (passion ? passion.emoji + ' ' + passion.label : '') + '</div>\
+      </div>\
+      <button class="btn ghost" onclick="toast(\'Message envoyé à ' + escapeHtml(u.name) + '\')" style="font-size:10px;padding:5px 10px;">💬</button>\
+    </div>';
+  }).join("");
+
+  var passionsHTML = (c.groupPassions || [c.passion]).map(function(pid) {
+    var p = passionById(pid);
+    return p ? '<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:var(--bg-deep);border-radius:8px;font-size:11px;font-weight:700;">' + p.emoji + ' ' + p.label + '</span>' : '';
+  }).join(" ");
+
+  openModal('\
+    <div class="modal-handle"></div>\
+    <div class="modal-title">👥 ' + escapeHtml(c.groupName || "Groupe") + '</div>\
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">' + (memberIds.length + 1) + ' membres</div>\
+    <div style="margin-bottom:14px;">' + passionsHTML + '</div>\
+    <div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:8px;">Membres</div>\
+    ' + membersHTML + '\
+    <div style="display:flex;gap:8px;margin-top:16px;">\
+      <button class="btn ghost" onclick="closeModal();openConversation(\'' + convId + '\')" style="flex:1;">← Retour</button>\
+      <button class="btn ghost" onclick="toast(\'📤 Lien copié\')" style="flex:1;">📤 Partager</button>\
+      <button class="btn ghost" onclick="toast(\'🚪 Tu as quitté le groupe\')" style="flex:1;color:#ef4444;border-color:rgba(239,68,68,0.3);">Quitter</button>\
+    </div>\
+  ');
+}
+
 function sendMessage(convId) {
   const inp = document.getElementById("convInput");
   if (!inp) return;
@@ -10811,98 +10908,110 @@ const reelsState = {
 const SEED_REEL_VIDEOS = [
   {
     id: "reel_seed_cuisine_1",
-    video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+    video: "https://videos.pexels.com/video-files/3195394/3195394-sd_640_360_25fps.mp4",
     poster: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=720&h=1280&fit=crop&auto=format&q=80",
+    fallback: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
     userId: "u_theo", passion: "cuisine", mood: "creation",
-    text: "Tarte aux fruits du marché de ce matin. La pâte sablée maison, beurre demi-sel breton. Aucun raccourci.",
+    text: "Tarte aux fruits du marché. La pâte sablée maison, beurre demi-sel breton. 🍰",
     createdAt: Date.now() - 2 * 3600000,
   },
   {
     id: "reel_seed_sport_skate_1",
-    video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+    video: "https://videos.pexels.com/video-files/5765270/5765270-sd_640_360_24fps.mp4",
     poster: "https://images.unsplash.com/photo-1543364195-077a52659557?w=720&h=1280&fit=crop&auto=format&q=80",
+    fallback: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
     userId: "u_theo", passion: "sport", mood: "actu",
-    text: "Session skate dimanche matin au parc. Je tente le kickflip depuis trois mois. Aujourd'hui, ça commence à venir.",
+    text: "Session skate dimanche matin. Kickflip en cours depuis trois mois. Aujourd'hui ça commence à venir. 🛹",
     createdAt: Date.now() - 4 * 3600000,
   },
   {
     id: "reel_seed_musique_1",
-    video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+    video: "https://videos.pexels.com/video-files/5765163/5765163-sd_640_360_24fps.mp4",
     poster: "https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=720&h=1280&fit=crop&auto=format&q=80",
+    fallback: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
     userId: "u_lea", passion: "musique", mood: "creation",
-    text: "Petite impro guitare ce matin. C'est en bricolant qu'on trouve les meilleurs accords, celui-ci m'est tombé dessus.",
+    text: "Impro guitare ce matin. En bricolant on trouve les meilleurs accords. 🎸",
     createdAt: Date.now() - 6 * 3600000,
   },
   {
     id: "reel_seed_voyage_1",
-    video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+    video: "https://videos.pexels.com/video-files/3571264/3571264-sd_640_360_30fps.mp4",
     poster: "https://images.unsplash.com/photo-1530841377377-3ff06c0ca713?w=720&h=1280&fit=crop&auto=format&q=80",
+    fallback: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
     userId: "u_nina", passion: "voyage", mood: "chill",
-    text: "Lever de soleil sur la côte. Trois jours sans téléphone, juste un carnet et un appareil. Je reviens transformée.",
+    text: "Lever de soleil sur la côte. Trois jours sans téléphone, juste un carnet. 🌅",
     createdAt: Date.now() - 8 * 3600000,
   },
   {
     id: "reel_seed_photo_1",
-    video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    video: "https://videos.pexels.com/video-files/3209243/3209243-sd_640_360_25fps.mp4",
     poster: "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=720&h=1280&fit=crop&auto=format&q=80",
+    fallback: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
     userId: "u_karim", passion: "photo", mood: "learn",
-    text: "Comment je règle mon argentique avant une sortie street. Trois variables, un seul instinct. Le reste, c'est du travail.",
+    text: "Comment je règle mon argentique avant une sortie street. 📸",
     createdAt: Date.now() - 10 * 3600000,
   },
   {
     id: "reel_seed_cuisine_2",
-    video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+    video: "https://videos.pexels.com/video-files/4253587/4253587-sd_640_360_25fps.mp4",
     poster: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=720&h=1280&fit=crop&auto=format&q=80",
+    fallback: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
     userId: "u_theo", passion: "cuisine", mood: "learn",
-    text: "Le geste du pli pour la pâte feuilletée. C'est 80 % de patience et 20 % de respect du beurre froid.",
+    text: "Le geste du pli pour la pâte feuilletée. 80% patience, 20% beurre froid. 🧈",
     createdAt: Date.now() - 12 * 3600000,
   },
   {
     id: "reel_seed_litterature_1",
-    video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+    video: "https://videos.pexels.com/video-files/6981411/6981411-sd_640_360_25fps.mp4",
     poster: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=720&h=1280&fit=crop&auto=format&q=80",
+    fallback: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
     userId: "u_sofia", passion: "litterature", mood: "chill",
-    text: "Lecture du dimanche, thé qui fume, fenêtre ouverte. Annie Ernaux, encore. Je relis « Les Années » pour la troisième fois.",
+    text: "Lecture du dimanche. Thé, fenêtre ouverte, Annie Ernaux. 📚",
     createdAt: Date.now() - 14 * 3600000,
   },
   {
     id: "reel_seed_musique_2",
-    video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+    video: "https://videos.pexels.com/video-files/4488162/4488162-sd_640_360_24fps.mp4",
     poster: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=720&h=1280&fit=crop&auto=format&q=80",
+    fallback: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
     userId: "u_lea", passion: "musique", mood: "actu",
-    text: "Concert d'une amie hier soir dans une cave de la Croix-Rousse. 30 personnes, lumière tamisée, magie pure.",
+    text: "Concert dans une cave de la Croix-Rousse. 30 personnes, lumière tamisée. 🎶",
     createdAt: Date.now() - 16 * 3600000,
   },
   {
     id: "reel_seed_voyage_2",
-    video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4",
+    video: "https://videos.pexels.com/video-files/1721294/1721294-sd_640_360_24fps.mp4",
     poster: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=720&h=1280&fit=crop&auto=format&q=80",
+    fallback: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4",
     userId: "u_nina", passion: "voyage", mood: "chill",
-    text: "Marrakech, ruelles du souk au lever du jour. La lumière, l'odeur du pain, les premiers vendeurs.",
+    text: "Marrakech, ruelles du souk au lever du jour. 🇲🇦",
     createdAt: Date.now() - 18 * 3600000,
   },
   {
     id: "reel_seed_photo_2",
-    video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
+    video: "https://videos.pexels.com/video-files/4065906/4065906-sd_640_360_24fps.mp4",
     poster: "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=720&h=1280&fit=crop&auto=format&q=80",
+    fallback: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
     userId: "u_karim", passion: "photo", mood: "creation",
-    text: "Atelier tirage argentique cet après-midi. Voir l'image apparaître dans le révélateur, c'est toujours un petit miracle.",
+    text: "Atelier tirage argentique. L'image apparaît dans le révélateur. 🖤",
     createdAt: Date.now() - 20 * 3600000,
   },
   {
     id: "reel_seed_sport_2",
-    video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+    video: "https://videos.pexels.com/video-files/4761437/4761437-sd_640_360_25fps.mp4",
     poster: "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=720&h=1280&fit=crop&auto=format&q=80",
+    fallback: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
     userId: "u_theo", passion: "sport", mood: "learn",
-    text: "Échauffement du matin avant la run. 15 minutes de mobilité, ça change toute la séance. Le corps écoute quand on l'écoute.",
+    text: "Échauffement du matin. 15 min de mobilité, ça change tout. 💪",
     createdAt: Date.now() - 22 * 3600000,
   },
   {
     id: "reel_seed_cuisine_3",
-    video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4",
+    video: "https://videos.pexels.com/video-files/4253586/4253586-sd_640_360_25fps.mp4",
     poster: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=720&h=1280&fit=crop&auto=format&q=80",
+    fallback: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4",
     userId: "u_theo", passion: "cuisine", mood: "chill",
-    text: "Café du matin, mug en grès fait main par une amie céramiste. Les petits rituels qui font la journée.",
+    text: "Café du matin, mug en grès fait main. Les petits rituels. ☕",
     createdAt: Date.now() - 25 * 3600000,
   },
 ];
@@ -10939,22 +11048,31 @@ function reelVideoFallback(videoEl, fallbackUrl) {
 }
 
 function buildReels() {
-  // Posts source : seed reels (vraies vidéos) + posts utilisateurs (vidéos + photos en fallback).
   const mood = state.currentMood || "all";
   const seedReels = getSeedReelPosts();
   const userPosts = allFeedPosts();
 
-  // Filtre par mood courant si différent de "all" pour rester cohérent avec le feed.
-  const filterByMood = (p) => mood === "all" ? true : p.mood === mood;
-  const seedFiltered = seedReels.filter(filterByMood);
-  const userFiltered = userPosts.filter(filterByMood);
+  // Filtrer par profils sélectionnés (comme le fil)
+  if (!state.selectedProfileIds) state.selectedProfileIds = [];
+  const selectedIds = state.selectedProfileIds;
+  const selectedPassions = selectedIds.map(function(id) {
+    var p = (state.user.profiles || []).find(function(pr) { return pr.id === id; });
+    return p ? p.passion : null;
+  }).filter(Boolean);
 
-  // Priorise dans l'ordre : vidéos utilisateurs > seed reels (vraies vidéos) > photos utilisateurs
-  const userVideos = userFiltered.filter(p => p.type === "video" && p.video);
-  const userPhotos = userFiltered.filter(p => p.type === "photo" || (p.cover && p.type !== "video"));
+  const filterByPassion = function(p) {
+    if (selectedPassions.length === 0) return true;
+    return selectedPassions.indexOf(p.passion) !== -1;
+  };
+  const filterByMood = function(p) { return mood === "all" ? true : p.mood === mood; };
+
+  const seedFiltered = seedReels.filter(filterByMood).filter(filterByPassion);
+  const userFiltered = userPosts.filter(filterByMood).filter(filterByPassion);
+
+  const userVideos = userFiltered.filter(function(p) { return p.type === "video" && p.video; });
+  const userPhotos = userFiltered.filter(function(p) { return p.type === "photo" || (p.cover && p.type !== "video"); });
   const ordered = [...userVideos, ...seedFiltered, ...userPhotos];
 
-  // De-duplication par id, limite raisonnable
   const seen = new Set();
   const items = [];
   for (const p of ordered) {
@@ -12324,38 +12442,45 @@ function filterExplore() {
 }
 
 function openPassionExplorer(pid) {
-  const p = passionById(pid);
-  const posts = allFeedPosts().filter(x => x.passion === pid);
-  const creators = state.seed.users.filter(u => u.passion === pid);
+  var p = passionById(pid);
+  if (!p) { toast("Passion non trouvée"); return; }
+  var posts = allFeedPosts().filter(function(x) { return x.passion === pid; });
+  var creators = (state.seed.users || []).filter(function(u) { return u.passion === pid; });
+  var hasProfile = (state.user.profiles || []).find(function(up) { return up.passion === pid; });
 
-  openModal(`
-    <div class="modal-handle"></div>
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-      <div style="font-size:42px;">${p.emoji}</div>
-      <div>
-        <div class="modal-title" style="margin:0;">${p.label}</div>
-        <div style="font-size:12px;color:var(--muted);">${posts.length} post${posts.length>1?"s":""} · ${creators.length} créateur${creators.length>1?"s":""}</div>
-      </div>
-      <div style="margin-left:auto;">
-        ${state.user.profiles.find(up => up.passion === pid)
-          ? '<span class="pill active">Ton profil</span>'
-          : `<button class="btn small primary" onclick="quickCreateProfile('${pid}')">+ Créer profil</button>`}
-      </div>
-    </div>
+  var creatorsHTML = creators.length ? creators.map(function(u) {
+    return '<div class="list-row">' +
+      '<div class="avatar" style="background:' + u.avatar + ';">' + u.profileEmoji + '</div>' +
+      '<div class="list-row-body">' +
+        '<div class="list-row-title">' + escapeHtml(u.name) + '</div>' +
+        '<div class="list-row-meta">' + escapeHtml(u.bio || "") + '</div>' +
+      '</div>' +
+      '<button class="btn small" onclick="toast(\'Suivi·e\')">Suivre</button>' +
+    '</div>';
+  }).join("") : '<div class="empty"><div class="empty-text">Pas encore de créateurs</div></div>';
 
-    <div class="section-title" style="margin-top:6px;">Créateurs</div>
-    ${creators.map(u => `<div class="list-row">
-      <div class="avatar" style="background:${u.avatar};">${u.profileEmoji}</div>
-      <div class="list-row-body">
-        <div class="list-row-title">${escapeHtml(u.name)}</div>
-        <div class="list-row-meta">${escapeHtml(u.bio || "")}</div>
-      </div>
-      <button class="btn small" onclick="toast('Suivi·e')">Suivre</button>
-    </div>`).join("") || '<div class="empty"><div class="empty-text">Pas encore de créateurs</div></div>'}
+  var postsHTML = posts.length ? posts.slice(0,6).map(renderPostHTML).join("") : '<div class="empty"><div class="empty-icon">✏️</div><div class="empty-text">Aucun post pour l\'instant</div></div>';
 
-    <div class="section-title" style="margin-top:14px;">Posts</div>
-    ${posts.slice(0, 6).map(renderPostHTML).join("") || "<div class=\"empty\"><div class=\"empty-icon\">✏️</div><div class=\"empty-text\">Aucun post pour l'instant</div></div>"}
-  `);
+  var profileBtn = hasProfile
+    ? '<span class="pill active">Ton profil</span>'
+    : '<button class="btn small primary" onclick="quickCreateProfile(\'' + pid + '\')">+ Créer profil</button>';
+
+  var html = '\
+    <div class="modal-handle"></div>\
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">\
+      <div style="font-size:42px;">' + p.emoji + '</div>\
+      <div>\
+        <div class="modal-title" style="margin:0;">' + p.label + '</div>\
+        <div style="font-size:12px;color:var(--muted);">' + posts.length + ' post' + (posts.length>1?"s":"") + ' · ' + creators.length + ' créateur' + (creators.length>1?"s":"") + '</div>\
+      </div>\
+      <div style="margin-left:auto;">' + profileBtn + '</div>\
+    </div>\
+    <div class="section-title" style="margin-top:6px;">Créateurs</div>\
+    ' + creatorsHTML + '\
+    <div class="section-title" style="margin-top:14px;">Posts</div>\
+    ' + postsHTML;
+
+  openModal(html);
 }
 
 function quickCreateProfile(pid) {
@@ -12671,11 +12796,39 @@ function initIrlMap() {
 function updateIrlMapMarkers() {
   if (!irlMap || !irlMarkersLayer) return;
   irlMarkersLayer.clearLayers();
-  const events = allEvents();
-  // Applique le filtre passion (cohérent avec la liste)
-  let filtered = events;
+  var events = allEvents();
+  var currentTime = Date.now();
+
+  // Supprimer les événements passés
+  events = events.filter(function(e) { return e.date > currentTime; });
+
+  // Filtre par passion
+  var filtered = events;
   if (irlPassionFilter !== "all") {
-    filtered = filtered.filter(e => e.passion === irlPassionFilter);
+    filtered = filtered.filter(function(e) { return e.passion === irlPassionFilter; });
+  }
+
+  // Filtre par type (mine/joined)
+  if (irlFilter === "mine") filtered = filtered.filter(function(e) { return e._mine; });
+  if (irlFilter === "joined") filtered = filtered.filter(function(e) { return (state.user.joinedEvents || []).includes(e.id); });
+
+  // Filtre par date — même logique que renderIRL
+  if (irlDateFilter === "today") {
+    var todayStart = new Date(); todayStart.setHours(0,0,0,0);
+    var todayEnd = new Date(); todayEnd.setHours(23,59,59,999);
+    filtered = filtered.filter(function(e) { return e.date >= todayStart.getTime() && e.date <= todayEnd.getTime(); });
+  } else if (irlDateFilter === "tomorrow") {
+    var tmrStart = new Date(); tmrStart.setDate(tmrStart.getDate()+1); tmrStart.setHours(0,0,0,0);
+    var tmrEnd = new Date(); tmrEnd.setDate(tmrEnd.getDate()+1); tmrEnd.setHours(23,59,59,999);
+    filtered = filtered.filter(function(e) { return e.date >= tmrStart.getTime() && e.date <= tmrEnd.getTime(); });
+  } else if (irlDateFilter === "week") {
+    var weekEnd = currentTime + 7 * 86400000;
+    filtered = filtered.filter(function(e) { return e.date >= currentTime && e.date <= weekEnd; });
+  } else if (irlDateFilter === "month") {
+    var monthEnd = currentTime + 30 * 86400000;
+    filtered = filtered.filter(function(e) { return e.date >= currentTime && e.date <= monthEnd; });
+  } else if (irlDateFilter === "custom" && irlCustomDate) {
+    filtered = filtered.filter(function(e) { return e.date >= irlCustomDate.start && e.date <= irlCustomDate.end; });
   }
 
   const points = [];
@@ -12698,14 +12851,14 @@ function updateIrlMapMarkers() {
     const d = fmtEventDate(ev.date);
     m.bindPopup(`
       <div class="irl-popup-title">${escapeHtml(ev.title || "Événement")}</div>
-      <div class="irl-popup-meta">${passion.emoji || ""} ${escapeHtml(passion.label || "")} · ${escapeHtml(ev.city || "")} · ${d.day} ${d.month}</div>
+      <div class="irl-popup-meta">${passion.emoji || ""} ${escapeHtml(passion.label || "")} · ${escapeHtml(ev.city || "")} · ${d.day} ${d.month} à ${d.time}</div>
       <button class="irl-popup-btn" onclick="openEventDetails('${ev.id}')">Voir l'événement</button>
     `);
     points.push([lat, lng]);
   });
 
-  // Auto-zoom sur les marqueurs si filtre actif
-  if (irlPassionFilter !== "all" && points.length > 0) {
+  // Auto-zoom sur les marqueurs filtrés
+  if ((irlPassionFilter !== "all" || irlDateFilter !== "all" || irlFilter !== "all") && points.length > 0) {
     irlMap.fitBounds(L.latLngBounds(points), { padding: [40, 40], maxZoom: 11 });
   } else if (points.length === 0) {
     irlMap.setView([46.6, 2.5], 5.7);
@@ -12760,25 +12913,93 @@ function renderIrlPassionTiles() {
   row.innerHTML = html;
 }
 
-function renderIRL() {
-  // Tuiles passions niveau 1
-  renderIrlPassionTiles();
+var irlDateFilter = "all";
+var irlCustomDate = null;
 
-  // Carte interactive Leaflet, synchronisée avec les filtres
+function setIrlDateFilter(val, btn) {
+  irlDateFilter = val;
+  irlCustomDate = null;
+  document.querySelectorAll("#irlDateRow .pill").forEach(function(p) { p.classList.remove("active"); });
+  if (btn) btn.classList.add("active");
+  renderIRL();
+}
+
+function openIrlCalendar() {
+  openModal('\
+    <div class="modal-handle"></div>\
+    <div class="modal-title">🗓 Choisir une date</div>\
+    <label class="field"><span>Date de début</span>\
+      <input type="date" class="input" id="irlCalStart" value="' + new Date().toISOString().split("T")[0] + '"/>\
+    </label>\
+    <label class="field"><span>Date de fin (optionnel)</span>\
+      <input type="date" class="input" id="irlCalEnd"/>\
+    </label>\
+    <button class="btn primary block" onclick="applyIrlCalendar()" style="margin-top:14px;">Appliquer</button>\
+  ');
+}
+
+function applyIrlCalendar() {
+  var start = document.getElementById("irlCalStart")?.value;
+  var end = document.getElementById("irlCalEnd")?.value;
+  if (!start) { toast("Choisis une date"); return; }
+  irlDateFilter = "custom";
+  irlCustomDate = { start: new Date(start).getTime(), end: end ? new Date(end + "T23:59:59").getTime() : new Date(start + "T23:59:59").getTime() };
+  document.querySelectorAll("#irlDateRow .pill").forEach(function(p) { p.classList.remove("active"); });
+  var customBtn = document.querySelector('#irlDateRow [data-irldate="custom"]');
+  if (customBtn) customBtn.classList.add("active");
+  closeModal();
+  renderIRL();
+}
+
+function renderIRL() {
+  renderIrlPassionTiles();
   initIrlMap();
   updateIrlMapMarkers();
 
-  const events = allEvents();
+  var events = allEvents();
+  var currentTime = Date.now();
 
-  // Event list, combine niveau 1 (passion) + niveau 2 (mes events / inscrit)
-  let filtered = events;
-  if (irlPassionFilter !== "all") filtered = filtered.filter(e => e.passion === irlPassionFilter);
-  if (irlFilter === "mine") filtered = filtered.filter(e => e._mine);
-  if (irlFilter === "joined") filtered = filtered.filter(e => (state.user.joinedEvents || []).includes(e.id));
+  // Supprimer les événements passés immédiatement
+  events = events.filter(function(e) {
+    return e.date > currentTime;
+  });
+
+  // Filtre par passion
+  var filtered = events;
+  if (irlPassionFilter !== "all") filtered = filtered.filter(function(e) { return e.passion === irlPassionFilter; });
+  if (irlFilter === "mine") filtered = filtered.filter(function(e) { return e._mine; });
+  if (irlFilter === "joined") filtered = filtered.filter(function(e) { return (state.user.joinedEvents || []).includes(e.id); });
+
+  // Filtre par date
+  if (irlDateFilter === "today") {
+    var todayStart = new Date(); todayStart.setHours(0,0,0,0);
+    var todayEnd = new Date(); todayEnd.setHours(23,59,59,999);
+    filtered = filtered.filter(function(e) { return e.date >= todayStart.getTime() && e.date <= todayEnd.getTime(); });
+  } else if (irlDateFilter === "tomorrow") {
+    var tmrStart = new Date(); tmrStart.setDate(tmrStart.getDate()+1); tmrStart.setHours(0,0,0,0);
+    var tmrEnd = new Date(); tmrEnd.setDate(tmrEnd.getDate()+1); tmrEnd.setHours(23,59,59,999);
+    filtered = filtered.filter(function(e) { return e.date >= tmrStart.getTime() && e.date <= tmrEnd.getTime(); });
+  } else if (irlDateFilter === "week") {
+    var weekEnd = currentTime + 7 * 86400000;
+    filtered = filtered.filter(function(e) { return e.date >= currentTime && e.date <= weekEnd; });
+  } else if (irlDateFilter === "month") {
+    var monthEnd = currentTime + 30 * 86400000;
+    filtered = filtered.filter(function(e) { return e.date >= currentTime && e.date <= monthEnd; });
+  } else if (irlDateFilter === "custom" && irlCustomDate) {
+    filtered = filtered.filter(function(e) { return e.date >= irlCustomDate.start && e.date <= irlCustomDate.end; });
+  }
+
+  // Sync pills date
+  document.querySelectorAll("#irlDateRow .pill").forEach(function(p) {
+    p.classList.toggle("active", p.getAttribute("data-irldate") === irlDateFilter);
+  });
+
+  // Trier par date croissante (prochain en premier)
+  filtered.sort(function(a, b) { return a.date - b.date; });
 
   const list = $("#eventList");
   if (filtered.length === 0) {
-    list.innerHTML = `<div class="empty"><div class="empty-icon">🗓</div><div class="empty-title">Aucun événement</div><div class="empty-text">Crée le premier pour +30 pts.</div><button class="btn primary" style="margin-top:10px;" onclick="openCreateEvent()">+ Créer</button></div>`;
+    list.innerHTML = '<div class="empty"><div class="empty-icon">🗓</div><div class="empty-title">Aucun événement</div><div class="empty-text">Crée le premier pour +30 pts.</div><button class="btn primary" style="margin-top:10px;" onclick="openCreateEvent()">+ Créer</button></div>';
     return;
   }
 
@@ -12786,6 +13007,8 @@ function renderIRL() {
     const passion = passionById(e.passion);
     const joined = (state.user.joinedEvents || []).includes(e.id);
     const d = fmtEventDate(e.date);
+    const daysLeft = Math.max(0, Math.ceil((e.date - Date.now()) / 86400000));
+    const urgency = daysLeft === 0 ? "🔴 Aujourd'hui" : daysLeft === 1 ? "🟠 Demain" : daysLeft <= 7 ? "🟢 Dans " + daysLeft + "j" : "";
     const atts = (e.attendees || []).slice(0, 4);
     const attAvatars = atts.map(aid => {
       const u = userById(aid) || { avatar: "#64748b", profileEmoji: "?" };
@@ -12793,10 +13016,10 @@ function renderIRL() {
     }).join("");
     return `<div class="event-card">
       <div style="display:flex;gap:10px;">
-        <div class="event-date-block"><div class="event-date-day">${d.day}</div><div class="event-date-month">${d.month}</div></div>
+        <div class="event-date-block"><div class="event-date-day">${d.day}</div><div class="event-date-month">${d.month}</div><div style="font-size:10px;font-weight:700;color:var(--accent);margin-top:2px;">${d.time}</div></div>
         <div style="flex:1;min-width:0;">
           <div class="event-title">${escapeHtml(e.title)}</div>
-          <div class="event-meta">${passion.emoji} ${passion.label} · ${escapeHtml(e.city || "")}</div>
+          <div class="event-meta">${passion.emoji} ${passion.label} · ${escapeHtml(e.city || "")}${urgency ? ' · <span style="font-weight:700;">' + urgency + '</span>' : ''}</div>
         </div>
         ${e._mine ? '<span class="pill active" style="height:fit-content;">Organisé</span>' : ""}
       </div>
@@ -14018,17 +14241,24 @@ async function searchUsers(query) {
     resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);font-size:12px;">Aucun utilisateur trouvé</div>';
     return;
   }
-  resultsEl.innerHTML = data.map(u => {
-    const passion = passionById(u.passion_id);
-    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);" onclick="startDirectMessage('${u.id}','${escapeHtml(u.username)}','${u.emoji||"✨"}','${u.color||"#8b5cf6"}')">
-      <div style="width:36px;height:36px;border-radius:50%;background:${u.color||"#8b5cf6"};display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;">${u.emoji||"✨"}</div>
-      <div style="flex:1;min-width:0;">
-        <div style="font-weight:700;font-size:13px;color:var(--text);">${escapeHtml(u.username)}</div>
-        <div style="font-size:10px;color:var(--muted);">${passion ? passion.emoji+" "+passion.label : ""}${u.bio ? " · "+escapeHtml(u.bio.slice(0,30)) : ""}</div>
-      </div>
-      <button style="background:var(--accent);color:#fff;border:none;border-radius:10px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;">💬</button>
-    </div>`;
-  }).join("");
+  // Stocker les résultats pour accéder par index (évite les problèmes d'apostrophes dans onclick)
+  window._searchResults = data;
+  resultsEl.innerHTML = "";
+  data.forEach(function(u, idx) {
+    var passion = passionById(u.passion_id);
+    var row = document.createElement("div");
+    row.style.cssText = "display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);";
+    row.onclick = function() {
+      startDirectMessage(u.id, u.username || "Passionné", u.emoji || "✨", u.color || "#8b5cf6");
+    };
+    row.innerHTML = '<div style="width:36px;height:36px;border-radius:50%;background:' + (u.color||"#8b5cf6") + ';display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;">' + (u.emoji||"✨") + '</div>' +
+      '<div style="flex:1;min-width:0;">' +
+        '<div style="font-weight:700;font-size:13px;color:var(--text);">' + escapeHtml(u.username || "Passionné") + '</div>' +
+        '<div style="font-size:10px;color:var(--muted);">' + (passion ? passion.emoji + " " + passion.label : "") + (u.bio ? " · " + escapeHtml((u.bio||"").slice(0,30)) : "") + '</div>' +
+      '</div>' +
+      '<div style="background:var(--accent);color:#fff;border:none;border-radius:10px;padding:5px 10px;font-size:11px;font-weight:700;">💬</div>';
+    resultsEl.appendChild(row);
+  });
 }
 
 async function startDirectMessage(userId, username, emoji, color) {
@@ -14036,6 +14266,24 @@ async function startDirectMessage(userId, username, emoji, color) {
   if (resultsEl) { resultsEl.style.display = "none"; }
   var searchEl = document.getElementById("msgUserSearch");
   if (searchEl) searchEl.value = "";
+
+  // Vérifier si une conversation existe déjà avec cet utilisateur
+  var convs = getConversations();
+  var existing = convs.find(function(c) {
+    return !c.isGroup && c.userId === userId;
+  });
+
+  if (existing) {
+    // Mettre à jour les infos du profil au cas où
+    existing.userName = username;
+    existing.userEmoji = emoji;
+    existing.userColor = color;
+    saveConversations();
+    renderMessages();
+    openConversation(existing.id);
+    return;
+  }
+
   toast("💬 Ouverture…");
   try {
     var convId = await supaCreateConversation(userId, currentProfile()?.passion);
@@ -14046,7 +14294,6 @@ async function startDirectMessage(userId, username, emoji, color) {
       userIds: [MY_UID, userId], lastAt: Date.now(), unread: 0, messages: [],
       fromSupabase: true,
     };
-    var convs = getConversations();
     convs.unshift(newConv);
     conversationsState = convs;
     saveConversations();
